@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Arquivos | Hugo Henrique</title>
+<style>
+    :root {
+        --primary-color: #3498db;
+        --primary-dark: #2980b9;
+        --secondary-color: #2ecc71;
+        --secondary-dark: #27ae60;
+        --text-color: #333;
+        --bg-color: #f5f7fa;
+        --card-bg: #fff;
+        --shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+        background-color: var(--bg-color);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        padding: 30px 0;
+    }
+    
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 0 20px;
+        flex: 1;
+    }
+    
+    .app-container {
+        background-color: var(--card-bg);
+        border-radius: 15px;
+        box-shadow: var(--shadow);
+        padding: 30px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .app-header {
+        margin-bottom: 30px;
+        text-align: center;
+        position: relative;
+    }
+    
+    .logo {
+        height: 60px;
+        width: 60px;
+        background-color: var(--primary-color);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        color: white;
+        font-size: 24px;
+    }
+    
+    h1 {
+        color: var(--text-color);
+        font-size: 28px;
+        margin-bottom: 5px;
+    }
+    
+    .app-description {
+        color: #777;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+    
+    .input-group {
+        margin-bottom: 25px;
+    }
+    
+    label {
+        font-weight: 600;
+        text-align: left;
+        display: block;
+        margin-bottom: 8px;
+        color: var(--text-color);
+    }
+    
+    input[type="number"] {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        box-sizing: border-box;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    
+    input[type="number"]:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    }
+    
+    .file-categories {
+        margin-bottom: 15px;
+    }
+    
+    .category-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #555;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .button-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    
+    .button-group button {
+        padding: 12px 10px;
+        border: none;
+        border-radius: 8px;
+        background-color: var(--primary-color);
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .button-group button:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .button-group button:active {
+        transform: translateY(0);
+        box-shadow: none;
+    }
+    
+    .file-icon {
+        margin-right: 5px;
+        font-size: 14px;
+    }
+    
+    .alert {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--secondary-color);
+        color: white;
+        padding: 12px 25px;
+        border-radius: 8px;
+        display: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        opacity: 0;
+        animation: fadeInOut 3s forwards;
+    }
+    
+    @keyframes fadeInOut {
+        0% { opacity: 0; transform: translate(-50%, -20px); }
+        15% { opacity: 1; transform: translate(-50%, 0); }
+        85% { opacity: 1; transform: translate(-50%, 0); }
+        100% { opacity: 0; transform: translate(-50%, -20px); }
+    }
+    
+    .footer {
+        text-align: center;
+        padding: 15px 0;
+        color: #777;
+        font-size: 12px;
+        margin-top: 30px;
+    }
+    
+    .developer-info {
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+    
+    .year {
+        margin-left: 5px;
+        background-color: var(--primary-color);
+        color: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 11px;
+    }
+    
+    /* Categorias de cores para tipos de arquivos */
+    .button-group.images button {
+        background-color: #3498db;
+    }
+    
+    .button-group.images button:hover {
+        background-color: #2980b9;
+    }
+    
+    .button-group.documents button {
+        background-color: #e74c3c;
+    }
+    
+    .button-group.documents button:hover {
+        background-color: #c0392b;
+    }
+    
+    .button-group.spreadsheets button {
+        background-color: #2ecc71;
+    }
+    
+    .button-group.spreadsheets button:hover {
+        background-color: #27ae60;
+    }
+    
+    .button-group.presentations button {
+        background-color: #f39c12;
+    }
+    
+    .button-group.presentations button:hover {
+        background-color: #d35400;
+    }
+    
+    .button-group.others button {
+        background-color: #9b59b6;
+    }
+    
+    .button-group.others button:hover {
+        background-color: #8e44ad;
+    }
+    
+    /* Responsivo */
+    @media (max-width: 600px) {
+        .app-container {
+            padding: 20px;
+        }
+        
+        .button-group {
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        }
+        
+        h1 {
+            font-size: 24px;
+        }
+    }
+</style>
+<script>
+async function gerarArquivo(tipo) {
+    // Obter o valor do tamanho do arquivo em MB do input
+    const tamanhoEmMB = parseFloat(document.getElementById('tamanho').value);
+
+    // Verificar se o tamanho é um número válido
+    if (isNaN(tamanhoEmMB) || tamanhoEmMB <= 0) {
+        mostrarAlerta('Por favor, insira um tamanho válido em MB.');
+        return;
+    }
+
+    // Tamanho em bytes
+    const tamanhoEmBytes = tamanhoEmMB * 1024 * 1024;
+    let blob;
+
+    // Criação do Blob de acordo com o tipo de arquivo
+    switch (tipo) {
+        case 'png':
+        case 'jpeg':
+        case 'bmp':
+        case 'svg':
+            blob = new Blob([''.padStart(tamanhoEmBytes, '0')], { type: 'image/' + tipo });
+            break;
+        case 'doc':
+        case 'docx':
+        case 'xls':
+        case 'xlsx':
+        case 'ppt':
+        case 'pptx':
+        case 'pdf':
+        case 'exe':
+            blob = new Blob([''.padStart(tamanhoEmBytes, '0')], { type: 'application/octet-stream' });
+            break;
+        case 'xml':
+            // Criar conteúdo XML
+            const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<arquivo>
+    <tamanho>${tamanhoEmMB}MB</tamanho>
+    <descricao>Arquivo gerado com ${tamanhoEmMB} MB.</descricao>
+    <autor>Hugo Henrique</autor>
+    <data>${new Date().toISOString().split('T')[0]}</data>
+</arquivo>`;
+            blob = new Blob([xmlContent], { type: 'application/xml' });
+            break;
+        default:
+            mostrarAlerta('Tipo de arquivo não suportado.');
+            return;
+    }
+
+    try {
+        // Nome sugerido para o arquivo, incluindo o tamanho em MB
+        const nomeArquivo = `arquivo_${tamanhoEmMB}MB.${tipo}`;
+
+        // Verificar se o navegador suporta File System Access API
+        if (window.showSaveFilePicker) {
+            // Pedir ao usuário para escolher o local de salvamento
+            const fileHandle = await window.showSaveFilePicker({
+                suggestedName: nomeArquivo,
+                types: [
+                    {
+                        description: 'Arquivos ' + tipo.toUpperCase(),
+                        accept: { [`application/${tipo}`]: [`.${tipo}`] }
+                    }
+                ]
+            });
+
+            // Escrever o arquivo no local selecionado pelo usuário
+            const writable = await fileHandle.createWritable();
+            await writable.write(blob);
+            await writable.close();
+            mostrarAlerta('Arquivo salvo com sucesso!');
+        } else {
+            // Fallback para navegadores que não suportam File System Access API
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = nomeArquivo;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            mostrarAlerta('Arquivo baixado com sucesso!');
+        }
+    } catch (error) {
+        console.error('Erro ao salvar o arquivo:', error);
+        mostrarAlerta('Erro ao salvar o arquivo. Verifique as permissões do navegador.');
+    }
+}
+
+// Função para mostrar o alerta e escondê-lo automaticamente após alguns segundos
+function mostrarAlerta(mensagem) {
+    const alertBox = document.getElementById('alert');
+    alertBox.textContent = mensagem;
+    alertBox.style.display = 'block';
+    
+    // Reset da animação se já estiver ocorrendo
+    alertBox.style.animation = 'none';
+    alertBox.offsetHeight; // Trigger a reflow
+    alertBox.style.animation = 'fadeInOut 3s forwards';
+    
+    setTimeout(() => {
+        alertBox.style.display = 'none';
+    }, 3000);
+}
+</script>
+</head>
+<body>
+<div class="container">
+    <div class="app-container">
+        <div class="app-header">
+            <div class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+            </div>
+            <h1>Gerador de Arquivos</h1>
+            <p class="app-description">Crie arquivos de diferentes formatos com o tamanho desejado.</p>
+        </div>
+
+        <div class="input-group">
+            <label for="tamanho">Tamanho do arquivo (em MB):</label>
+            <input type="number" id="tamanho" min="0.1" step="0.1" placeholder="Ex: 5" />
+        </div>
+
+        <div class="file-categories">
+            <div class="category-title">Imagens</div>
+            <div class="button-group images">
+                <button onclick="gerarArquivo('png')">
+                    <span class="file-icon">.png</span>
+                </button>
+                <button onclick="gerarArquivo('jpeg')">
+                    <span class="file-icon">.jpeg</span>
+                </button>
+                <button onclick="gerarArquivo('bmp')">
+                    <span class="file-icon">.bmp</span>
+                </button>
+                <button onclick="gerarArquivo('svg')">
+                    <span class="file-icon">.svg</span>
+                </button>
+            </div>
+            
+            <div class="category-title">Documentos</div>
+            <div class="button-group documents">
+                <button onclick="gerarArquivo('doc')">
+                    <span class="file-icon">.doc</span>
+                </button>
+                <button onclick="gerarArquivo('docx')">
+                    <span class="file-icon">.docx</span>
+                </button>
+                <button onclick="gerarArquivo('pdf')">
+                    <span class="file-icon">.pdf</span>
+                </button>
+                <button onclick="gerarArquivo('xml')">
+                    <span class="file-icon">.xml</span>
+                </button>
+            </div>
+            
+            <div class="category-title">Planilhas</div>
+            <div class="button-group spreadsheets">
+                <button onclick="gerarArquivo('xls')">
+                    <span class="file-icon">.xls</span>
+                </button>
+                <button onclick="gerarArquivo('xlsx')">
+                    <span class="file-icon">.xlsx</span>
+                </button>
+            </div>
+            
+            <div class="category-title">Apresentações</div>
+            <div class="button-group presentations">
+                <button onclick="gerarArquivo('ppt')">
+                    <span class="file-icon">.ppt</span>
+                </button>
+                <button onclick="gerarArquivo('pptx')">
+                    <span class="file-icon">.pptx</span>
+                </button>
+            </div>
+            
+            <div class="category-title">Outros</div>
+            <div class="button-group others">
+                <button onclick="gerarArquivo('exe')">
+                    <span class="file-icon">.exe</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Desenvolvido por <span class="developer-info">Hugo Henrique</span> <span class="year">2025</span></p>
+    </div>
+</div>
+
+<div id="alert" class="alert">Arquivo salvo com sucesso!</div>
+
+</body>
+</html>
